@@ -24,8 +24,10 @@ const corsOptions = {
     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
   };
 
-  app.use(cors('*'))
-
+  app.use(cors({
+    origin: 'https://production--glittering-dodol-08c860.netlify.app'
+  }));
+  
 const cookieParser = require('cookie-parser')
 
 const userRouter = require('./routes/user')
