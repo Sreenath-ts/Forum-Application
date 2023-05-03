@@ -119,6 +119,7 @@ module.exports = {
                 })
             }
         } catch (e) {
+            console.log(e,'signup error')
             if (e.code = 11000) {
                 res.status(400).json({
                     status: 'failed',
