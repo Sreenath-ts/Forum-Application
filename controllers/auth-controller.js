@@ -2,7 +2,7 @@ const User = require('../model/user-model')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const nodemailer = require('nodemailer');
-const fetch = import('node-fetch').then((module) => module.default);
+const http = require('http');
 
 // let transporter = nodemailer.createTransport({
 //     service: 'gmail',
@@ -45,52 +45,105 @@ module.exports = {
         try {
             console.log(req.body, 'sign in body check')
             if (req.body.googleToken) {
-                fetch('https://oauth2.googleapis.com/tokeninfo?id_token=' + req.body.googleToken, {
-                    method: 'get'
-                }).then((data) => {
-                    return data.json()
-                }).then(async (data) => {
-                    console.log(data)
-                    if (data.error) {
-                        res.status(400).json({ err: 'Google authentication failed!' })
-                        return
-                    } else {
-                        // req.body.password =await  bcrypt.hash(req.body.password,10)
-                        const newUser = await User.create({
-                            name: req.body.name,
-                            email: req.body.email,
-                            password: 'hehehehehe'
-                        })
-                        const token = signToken(newUser._id)
-                        const refreshToken = jwt.sign({ user: newUser._id }, 'My-secure-and-refreshed-password', { expiresIn: '7d' });
+                http.get('https://oauth2.googleapis.com/tokeninfo?id_token=' + req.body.googleToken, res => {
+    let data = '';
+    res.on('data', chunk => {
+        data += chunk;
+    });
+    res.on('end', async () => {
+        const tokenInfo = JSON.parse(data);
+        console.log(tokenInfo);
+        if (tokenInfo.error) {
+            res.status(400).json({ err: 'Google authentication failed!' });
+            return;
+        } else {
+            // req.body.password =await  bcrypt.hash(req.body.password,10)
+            try {
+                const newUser = await User.create({
+                    name: req.body.name,
+                    email: req.body.email,
+                    password: 'hehehehehe'
+                }); 
+            } catch (error) {
+                if (error.code = 11000) {
+                            res.status(400).json({
+                                status: 'failed',
+                                err: 'This email already exists.'
+                            })
+                            return
+                        }
+            }
+           
+            const token = signToken(newUser._id);
+            const refreshToken = jwt.sign({ user: newUser._id }, 'My-secure-and-refreshed-password', { expiresIn: '7d' });
 
-                        res.cookie('jwt', token, cookieOptions)
+            res.cookie('jwt', token, cookieOptions);
+
+            newUser.password = undefined;
+
+            const expires = new Date(Date.now() + 900 * 1000);
+            //  const expires = new Date(Date.now() + 10 * 1000)
+
+            res.status(201).json({
+                status: 'success',
+                token,
+                refreshToken,
+                expires,
+                data: {
+                    user: newUser
+                }
+            });
+        }
+    });
+}).on('error', error => {
+    console.error(error);
+});
+                // fetch('https://oauth2.googleapis.com/tokeninfo?id_token=' + req.body.googleToken, {
+                //     method: 'get'
+                // }).then((data) => {
+                //     return data.json()
+                // }).then(async (data) => {
+                //     console.log(data)
+                //     if (data.error) {
+                //         res.status(400).json({ err: 'Google authentication failed!' })
+                //         return
+                //     } else {
+                //         // req.body.password =await  bcrypt.hash(req.body.password,10)
+                //         const newUser = await User.create({
+                //             name: req.body.name,
+                //             email: req.body.email,
+                //             password: 'hehehehehe'
+                //         })
+                //         const token = signToken(newUser._id)
+                //         const refreshToken = jwt.sign({ user: newUser._id }, 'My-secure-and-refreshed-password', { expiresIn: '7d' });
+
+                //         res.cookie('jwt', token, cookieOptions)
 
 
-                        newUser.password = undefined
+                //         newUser.password = undefined
 
-                        const expires = new Date(Date.now() + 900 * 1000)
-                        //  const expires = new Date(Date.now() + 10 * 1000)
+                //         const expires = new Date(Date.now() + 900 * 1000)
+                //         //  const expires = new Date(Date.now() + 10 * 1000)
 
-                        res.status(201).json({
-                            status: 'success',
-                            token,
-                            refreshToken,
-                            expires,
-                            data: {
-                                user: newUser
-                            }
-                        })
-                    }
-                }).catch((e) => {
-                    if (e.code = 11000) {
-                        res.status(400).json({
-                            status: 'failed',
-                            err: 'This email already exists.'
-                        })
-                        return
-                    }
-                })
+                //         res.status(201).json({
+                //             status: 'success',
+                //             token,
+                //             refreshToken,
+                //             expires,
+                //             data: {
+                //                 user: newUser
+                //             }
+                //         })
+                //     }
+                // }).catch((e) => {
+                //     if (e.code = 11000) {
+                //         res.status(400).json({
+                //             status: 'failed',
+                //             err: 'This email already exists.'
+                //         })
+                //         return
+                //     }
+                // })
             } else {
 
                 req.body.password = await bcrypt.hash(req.body.password, 10)
