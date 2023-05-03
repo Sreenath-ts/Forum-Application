@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const nodemailer = require('nodemailer');
 const http = require('http');
+const fetch = import('node-fetch').then((module) => module.default);
 
 // let transporter = nodemailer.createTransport({
 //     service: 'gmail',

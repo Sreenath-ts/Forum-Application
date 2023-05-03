@@ -19,7 +19,7 @@ const cors = require('cors')
 
 const corsOptions = {
     origin: 'https://production--glittering-dodol-08c860.netlify.app' ,
-    methods: 'GET, POST',
+    methods: 'GET, POST, PUT,PATCH,DELETE',
     allowedHeaders: 'Content-Type, Authorization',
     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
   };
