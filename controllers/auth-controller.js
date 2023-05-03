@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const nodemailer = require('nodemailer');
 const http = require('http');
-
+const fetch = require('node-fetch')
 
 // let transporter = nodemailer.createTransport({
 //     service: 'gmail',
@@ -46,105 +46,105 @@ module.exports = {
         try {
             console.log(req.body, 'sign in body check')
             if (req.body.googleToken) {
-                http.get('https://oauth2.googleapis.com/tokeninfo?id_token=' + req.body.googleToken, res => {
-    let data = '';
-    res.on('data', chunk => {
-        data += chunk;
-    });
-    res.on('end', async () => {
-        const tokenInfo = JSON.parse(data);
-        console.log(tokenInfo);
-        if (tokenInfo.error) {
-            res.status(400).json({ err: 'Google authentication failed!' });
-            return;
-        } else {
-            // req.body.password =await  bcrypt.hash(req.body.password,10)
-            try {
-                const newUser = await User.create({
-                    name: req.body.name,
-                    email: req.body.email,
-                    password: 'hehehehehe'
-                }); 
-            } catch (error) {
-                if (error.code = 11000) {
-                            res.status(400).json({
-                                status: 'failed',
-                                err: 'This email already exists.'
-                            })
-                            return
-                        }
-            }
+//                 http.get('https://oauth2.googleapis.com/tokeninfo?id_token=' + req.body.googleToken, res => {
+//     let data = '';
+//     res.on('data', chunk => {
+//         data += chunk;
+//     });
+//     res.on('end', async () => {
+//         const tokenInfo = JSON.parse(data);
+//         console.log(tokenInfo);
+//         if (tokenInfo.error) {
+//             res.status(400).json({ err: 'Google authentication failed!' });
+//             return;
+//         } else {
+//             // req.body.password =await  bcrypt.hash(req.body.password,10)
+//             try {
+//                 const newUser = await User.create({
+//                     name: req.body.name,
+//                     email: req.body.email,
+//                     password: 'hehehehehe'
+//                 }); 
+//             } catch (error) {
+//                 if (error.code = 11000) {
+//                             res.status(400).json({
+//                                 status: 'failed',
+//                                 err: 'This email already exists.'
+//                             })
+//                             return
+//                         }
+//             }
            
-            const token = signToken(newUser._id);
-            const refreshToken = jwt.sign({ user: newUser._id }, 'My-secure-and-refreshed-password', { expiresIn: '7d' });
+//             const token = signToken(newUser._id);
+//             const refreshToken = jwt.sign({ user: newUser._id }, 'My-secure-and-refreshed-password', { expiresIn: '7d' });
 
-            res.cookie('jwt', token, cookieOptions);
+//             res.cookie('jwt', token, cookieOptions);
 
-            newUser.password = undefined;
+//             newUser.password = undefined;
 
-            const expires = new Date(Date.now() + 900 * 1000);
-            //  const expires = new Date(Date.now() + 10 * 1000)
+//             const expires = new Date(Date.now() + 900 * 1000);
+//             //  const expires = new Date(Date.now() + 10 * 1000)
 
-            res.status(201).json({
-                status: 'success',
-                token,
-                refreshToken,
-                expires,
-                data: {
-                    user: newUser
-                }
-            });
-        }
-    });
-}).on('error', error => {
-    console.error(error);
-});
-                // fetch('https://oauth2.googleapis.com/tokeninfo?id_token=' + req.body.googleToken, {
-                //     method: 'get'
-                // }).then((data) => {
-                //     return data.json()
-                // }).then(async (data) => {
-                //     console.log(data)
-                //     if (data.error) {
-                //         res.status(400).json({ err: 'Google authentication failed!' })
-                //         return
-                //     } else {
-                //         // req.body.password =await  bcrypt.hash(req.body.password,10)
-                //         const newUser = await User.create({
-                //             name: req.body.name,
-                //             email: req.body.email,
-                //             password: 'hehehehehe'
-                //         })
-                //         const token = signToken(newUser._id)
-                //         const refreshToken = jwt.sign({ user: newUser._id }, 'My-secure-and-refreshed-password', { expiresIn: '7d' });
+//             res.status(201).json({
+//                 status: 'success',
+//                 token,
+//                 refreshToken,
+//                 expires,
+//                 data: {
+//                     user: newUser
+//                 }
+//             });
+//         }
+//     });
+// }).on('error', error => {
+//     console.error(error);
+// });
+                fetch('https://oauth2.googleapis.com/tokeninfo?id_token=' + req.body.googleToken, {
+                    method: 'get'
+                }).then((data) => {
+                    return data.json()
+                }).then(async (data) => {
+                    console.log(data)
+                    if (data.error) {
+                        res.status(400).json({ err: 'Google authentication failed!' })
+                        return
+                    } else {
+                        // req.body.password =await  bcrypt.hash(req.body.password,10)
+                        const newUser = await User.create({
+                            name: req.body.name,
+                            email: req.body.email,
+                            password: 'hehehehehe'
+                        })
+                        const token = signToken(newUser._id)
+                        const refreshToken = jwt.sign({ user: newUser._id }, 'My-secure-and-refreshed-password', { expiresIn: '7d' });
 
-                //         res.cookie('jwt', token, cookieOptions)
+                        res.cookie('jwt', token, cookieOptions)
 
 
-                //         newUser.password = undefined
+                        newUser.password = undefined
 
-                //         const expires = new Date(Date.now() + 900 * 1000)
-                //         //  const expires = new Date(Date.now() + 10 * 1000)
+                        const expires = new Date(Date.now() + 900 * 1000)
+                        //  const expires = new Date(Date.now() + 10 * 1000)
 
-                //         res.status(201).json({
-                //             status: 'success',
-                //             token,
-                //             refreshToken,
-                //             expires,
-                //             data: {
-                //                 user: newUser
-                //             }
-                //         })
-                //     }
-                // }).catch((e) => {
-                //     if (e.code = 11000) {
-                //         res.status(400).json({
-                //             status: 'failed',
-                //             err: 'This email already exists.'
-                //         })
-                //         return
-                //     }
-                // })
+                        res.status(201).json({
+                            status: 'success',
+                            token,
+                            refreshToken,
+                            expires,
+                            data: {
+                                user: newUser
+                            }
+                        })
+                    }
+                }).catch((e) => {
+                    if (e.code = 11000) {
+                        res.status(400).json({
+                            status: 'failed',
+                            err: 'This email already exists.'
+                        })
+                        return
+                    }
+                })
             } else {
 
                 req.body.password = await bcrypt.hash(req.body.password, 10)
@@ -201,69 +201,69 @@ module.exports = {
             return
         }
         if (req.body.googleToken) {
-            http.get('http://oauth2.googleapis.com/tokeninfo?id_token=' + req.body.googleToken, (res) => {
-    let data = '';
-    res.on('data', (chunk) => {
-        data += chunk;
-    });
+//             http.get('http://oauth2.googleapis.com/tokeninfo?id_token=' + req.body.googleToken, (res) => {
+//     let data = '';
+//     res.on('data', (chunk) => {
+//         data += chunk;
+//     });
 
-    res.on('end', async () => {
-        const result = JSON.parse(data);
-        console.log(result);
-        if (result.error) {
-            res.status(400).json({ err: 'Google authentication failed!' });
-            return;
-        } else {
-            const token = signToken(user._id);
-            const refreshToken = jwt.sign({ user: user._id }, 'My-secure-and-refreshed-password', { expiresIn: '7d' });
-            const currentDate = new Date()
-            // const  expires =  new Date(currentDate.getTime() + 15 * 60000);
-            const expires = new Date(Date.now() + 900 * 1000)
-            console.log(expires, 'ex ti');
-            //  const expires = new Date(Date.now() + 10 * 1000)
-            res.cookie('jwt', token, cookieOptions)
-            user.password = undefined
-            res.status(200).json({
-                status: 'success',
-                token,
-                refreshToken,
-                expires,
-                data: user
-            })
-        }
-    });
-}).on('error', (err) => {
-    console.log('Error: ', err.message);
-});
-            // fetch('https://oauth2.googleapis.com/tokeninfo?id_token=' + req.body.googleToken, {
-            //     method: 'get'
-            // }).then((data) => {
-            //     return data.json()
-            // }).then(async (data) => {
-            //     console.log(data)
-            //     if (data.error) {
-            //         res.status(400).json({ err: 'Google authentication failed!' })
-            //         return
-            //     } else {
-            //         const token = signToken(user._id)
-            //         const refreshToken = jwt.sign({ user: user._id }, 'My-secure-and-refreshed-password', { expiresIn: '7d' });
-            //         const currentDate = new Date()
-            //         // const  expires =  new Date(currentDate.getTime() + 15 * 60000);
-            //         const expires = new Date(Date.now() + 900 * 1000)
-            //         console.log(expires, 'ex ti');
-            //         //  const expires = new Date(Date.now() + 10 * 1000)
-            //         res.cookie('jwt', token, cookieOptions)
-            //         user.password = undefined
-            //         res.status(200).json({
-            //             status: 'success',
-            //             token,
-            //             refreshToken,
-            //             expires,
-            //             data: user
-            //         })
-            //     }
-            // }
-            // )
+//     res.on('end', async () => {
+//         const result = JSON.parse(data);
+//         console.log(result);
+//         if (result.error) {
+//             res.status(400).json({ err: 'Google authentication failed!' });
+//             return;
+//         } else {
+//             const token = signToken(user._id);
+//             const refreshToken = jwt.sign({ user: user._id }, 'My-secure-and-refreshed-password', { expiresIn: '7d' });
+//             const currentDate = new Date()
+//             // const  expires =  new Date(currentDate.getTime() + 15 * 60000);
+//             const expires = new Date(Date.now() + 900 * 1000)
+//             console.log(expires, 'ex ti');
+//             //  const expires = new Date(Date.now() + 10 * 1000)
+//             res.cookie('jwt', token, cookieOptions)
+//             user.password = undefined
+//             res.status(200).json({
+//                 status: 'success',
+//                 token,
+//                 refreshToken,
+//                 expires,
+//                 data: user
+//             })
+//         }
+//     });
+// }).on('error', (err) => {
+//     console.log('Error: ', err.message);
+// });
+            fetch('https://oauth2.googleapis.com/tokeninfo?id_token=' + req.body.googleToken, {
+                method: 'get'
+            }).then((data) => {
+                return data.json()
+            }).then(async (data) => {
+                console.log(data)
+                if (data.error) {
+                    res.status(400).json({ err: 'Google authentication failed!' })
+                    return
+                } else {
+                    const token = signToken(user._id)
+                    const refreshToken = jwt.sign({ user: user._id }, 'My-secure-and-refreshed-password', { expiresIn: '7d' });
+                    const currentDate = new Date()
+                    // const  expires =  new Date(currentDate.getTime() + 15 * 60000);
+                    const expires = new Date(Date.now() + 900 * 1000)
+                    console.log(expires, 'ex ti');
+                    //  const expires = new Date(Date.now() + 10 * 1000)
+                    res.cookie('jwt', token, cookieOptions)
+                    user.password = undefined
+                    res.status(200).json({
+                        status: 'success',
+                        token,
+                        refreshToken,
+                        expires,
+                        data: user
+                    })
+                }
+            }
+            )
         } else {
             const status = await bcrypt.compare(password, user.password)
             if (!status) {
@@ -367,83 +367,82 @@ module.exports = {
             res.status(500).json({ message: 'Server error' });
         }
     },
-    recaptcha: (req, res, next) => {
-        let data;
-        if (Object.keys(req.query).length > 0) {
-          data = req.query;
-        } else {
-          data = req.body;
-        }
-      
-        const postData = `secret=${'6LeY3uskAAAAAPSya30jbULZKchVYooMHzMkXh1F'}&response=${data.captchaToken}`;
-      
-        const options = {
-          hostname: 'www.google.com',
-          port: 80,
-          path: '/recaptcha/api/siteverify',
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Content-Length': postData.length
-          }
-        };
-      
-        const request = http.request(options, (response) => {
-          let data = '';
-          response.on('data', (chunk) => {
-            data += chunk;
-          });
-          response.on('end', () => {
-               console.log(data,'dataatatatatatatatatattttttttttttttttttttttttttttttttttttttttt')
-            const result =data.json()
-//             const result = JSON.parse(data);
-            console.log(result, 'recaptchaaaaaaaaaaaaaaaaaaaaa')
-            if (result.success == true) {
-              return next()
-            }
-            res.status(400).json({ err: 'Seems you are not a human!' })
-            console.log(result);
-          });
-        });
-      
-        request.on('error', (error) => {
-          console.error(error);
-        });
-      
-        request.write(postData);
-        request.end();
-      },
     // recaptcha: (req, res, next) => {
     //     let data;
     //     if (Object.keys(req.query).length > 0) {
-    //         data = req.query;
+    //       data = req.query;
     //     } else {
-    //         data = req.body;
+    //       data = req.body;
     //     }
-    //     let _data = {
-    //         secret: '6LeY3uskAAAAAPSya30jbULZKchVYooMHzMkXh1F',
-    //         response: { 'missing-input-secret': data.captchaToken }
-    //     }
-    //     fetch('https://www.google.com/recaptcha/api/siteverify',
-    //         {
-    //             method: "POST",
-    //             body: `secret=${'6LeY3uskAAAAAPSya30jbULZKchVYooMHzMkXh1F'}&response=${data.captchaToken}`,
-    //             headers: { "Content-Type": "application/x-www-form-urlencoded" }
+      
+    //     const postData = `secret=${'6LeY3uskAAAAAPSya30jbULZKchVYooMHzMkXh1F'}&response=${data.captchaToken}`;
+      
+    //     const options = {
+    //       hostname: 'www.google.com',
+    //       port: 80,
+    //       path: '/recaptcha/api/siteverify',
+    //       method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/x-www-form-urlencoded',
+    //         'Content-Length': postData.length
+    //       }
+    //     };
+      
+    //     const request = http.request(options, (response) => {
+    //       let data = '';
+    //       response.on('data', (chunk) => {
+    //         data += chunk;
+    //       });
+    //       response.on('end', () => {
+    //         console.log(data,'dataatatatatatatatatattttttttttttttttttttttttttttttttttttttttt')
+    //         const result =data.json()
+    //         console.log(result, 'recaptchaaaaaaaaaaaaaaaaaaaaa')
+    //         if (result.success == true) {
+    //           return next()
     //         }
-    //     )
-    //         .then((data) => {
+    //         res.status(400).json({ err: 'Seems you are not a human!' })
+    //         console.log(result);
+    //       });
+    //     });
+      
+    //     request.on('error', (error) => {
+    //       console.error(error);
+    //     });
+      
+    //     request.write(postData);
+    //     request.end();
+    //   },
+    recaptcha: (req, res, next) => {
+        let data;
+        if (Object.keys(req.query).length > 0) {
+            data = req.query;
+        } else {
+            data = req.body;
+        }
+        let _data = {
+            secret: '6LeY3uskAAAAAPSya30jbULZKchVYooMHzMkXh1F',
+            response: { 'missing-input-secret': data.captchaToken }
+        }
+        fetch('https://www.google.com/recaptcha/api/siteverify',
+            {
+                method: "POST",
+                body: `secret=${'6LeY3uskAAAAAPSya30jbULZKchVYooMHzMkXh1F'}&response=${data.captchaToken}`,
+                headers: { "Content-Type": "application/x-www-form-urlencoded" }
+            }
+        )
+            .then((data) => {
 
-    //             return data.json()
-    //         })
-    //         .then((data) => {
-    //             console.log(data, 'recaptchaaaaaaaaaaaaaaaaaaaaa')
-    //             if (data.success == true) {
-    //                 return next()
-    //             }
-    //             res.status(400).json({ err: 'Seems you are not a human!' })
-    //             console.log(data);
-    //         })
-    // },
+                return data.json()
+            })
+            .then((data) => {
+                console.log(data, 'recaptchaaaaaaaaaaaaaaaaaaaaa')
+                if (data.success == true) {
+                    return next()
+                }
+                res.status(400).json({ err: 'Seems you are not a human!' })
+                console.log(data);
+            })
+    },
     verifyEmail: async (req, res) => {
          try{
         var digits = '0123456789';
