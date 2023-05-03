@@ -394,7 +394,9 @@ module.exports = {
             data += chunk;
           });
           response.on('end', () => {
-            const result = JSON.parse(data);
+               console.log(data,'dataatatatatatatatatattttttttttttttttttttttttttttttttttttttttt')
+            const result =data.json()
+//             const result = JSON.parse(data);
             console.log(result, 'recaptchaaaaaaaaaaaaaaaaaaaaa')
             if (result.success == true) {
               return next()
