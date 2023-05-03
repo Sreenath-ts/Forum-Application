@@ -95,7 +95,7 @@ const server = app.listen(3000,()=>{
 
 const io = socketIO(server, {
   cors: {
-    origin: ["https://admin.socket.io","http://localhost:4200"],
+    origin: ["https://admin.socket.io","https://codemonk-q95g.onrender.com"],
     credentials: true
   }
 });
