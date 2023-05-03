@@ -18,13 +18,13 @@ try{
 const cors = require('cors')
 
 const corsOptions = {
-    origin: 'http://localhost:4200',
+    origin: 'https://production--glittering-dodol-08c860.netlify.app' ,
     methods: 'GET, POST',
     allowedHeaders: 'Content-Type, Authorization',
     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
   };
 
-  app.use(cors())
+  app.use(cors(corsOptions))
 
 const cookieParser = require('cookie-parser')
 
@@ -95,7 +95,7 @@ const server = app.listen(3000,()=>{
 
 const io = socketIO(server, {
   cors: {
-    origin: ["https://admin.socket.io","http://localhost:4200"],
+    origin: ["https://admin.socket.io","https://codemonk-q95g.onrender.com"],
     credentials: true
   }
 });

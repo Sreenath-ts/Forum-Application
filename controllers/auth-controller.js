@@ -2,6 +2,8 @@ const User = require('../model/user-model')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const nodemailer = require('nodemailer');
+const fetch = import('node-fetch').then((module) => module.default);
+
 // let transporter = nodemailer.createTransport({
 //     service: 'gmail',
 //     auth: {
@@ -117,6 +119,7 @@ module.exports = {
                 })
             }
         } catch (e) {
+            console.log(e,'signup error')
             if (e.code = 11000) {
                 res.status(400).json({
                     status: 'failed',
