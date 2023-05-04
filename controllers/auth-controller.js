@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const nodemailer = require('nodemailer');
 const http = require('http');
-const fetch = require('node-fetch')
+const axios = require('axios')
 
 // let transporter = nodemailer.createTransport({
 //     service: 'gmail',
@@ -98,11 +98,11 @@ module.exports = {
 //     });
 // }).on('error', error => {
 //     console.error(error);
-// });
-                fetch('https://oauth2.googleapis.com/tokeninfo?id_token=' + req.body.googleToken, {
-                    method: 'get'
-                }).then((data) => {
-                    return data.json()
+// });   
+
+            
+                axios.get('https://oauth2.googleapis.com/tokeninfo?id_token=' + req.body.googleToken).then((data) => {
+                    return data.data
                 }).then(async (data) => {
                     console.log(data)
                     if (data.error) {
@@ -235,10 +235,8 @@ module.exports = {
 // }).on('error', (err) => {
 //     console.log('Error: ', err.message);
 // });
-            fetch('https://oauth2.googleapis.com/tokeninfo?id_token=' + req.body.googleToken, {
-                method: 'get'
-            }).then((data) => {
-                return data.json()
+            axios.get('https://oauth2.googleapis.com/tokeninfo?id_token=' + req.body.googleToken).then((data) => {
+                return data.data
             }).then(async (data) => {
                 console.log(data)
                 if (data.error) {
@@ -262,7 +260,7 @@ module.exports = {
                         data: user
                     })
                 }
-            }
+            }  
             )
         } else {
             const status = await bcrypt.compare(password, user.password)
@@ -423,16 +421,17 @@ module.exports = {
             secret: '6LeY3uskAAAAAPSya30jbULZKchVYooMHzMkXh1F',
             response: { 'missing-input-secret': data.captchaToken }
         }
-        fetch('https://www.google.com/recaptcha/api/siteverify',
+        axios.post('https://www.google.com/recaptcha/api/siteverify',
             {
-                method: "POST",
                 body: `secret=${'6LeY3uskAAAAAPSya30jbULZKchVYooMHzMkXh1F'}&response=${data.captchaToken}`,
+              
+            },{
                 headers: { "Content-Type": "application/x-www-form-urlencoded" }
             }
         )
             .then((data) => {
 
-                return data.json()
+                return data.data
             })
             .then((data) => {
                 console.log(data, 'recaptchaaaaaaaaaaaaaaaaaaaaa')
