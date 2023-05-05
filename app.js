@@ -24,6 +24,8 @@ app.use((req, res, next) => {
   next();
 });
 
+
+
 const corsOptions = {
     origin: 'https://production--glittering-dodol-08c860.netlify.app' ,
     methods: 'GET, POST, PUT,PATCH,DELETE',
@@ -32,7 +34,7 @@ const corsOptions = {
   };
 
   app.use(cors({
-    origin: 'https://production--glittering-dodol-08c860.netlify.app'
+    origin: 'https://glittering-dodol-08c860.netlify.app/'
   }));
   
 const cookieParser = require('cookie-parser')
@@ -104,7 +106,7 @@ const server = app.listen(3000,()=>{
 
 const io = socketIO(server, {
   cors: {
-    origin: ["https://admin.socket.io","https://codemonk-q95g.onrender.com"],
+    origin: ["https://admin.socket.io","https://codemonk-ywey.onrender.com","https://glittering-dodol-08c860.netlify.app/"],
     credentials: true
   }
 });
@@ -419,6 +421,7 @@ instrument(io,{auth:false})
 }catch(e){
     console.log(e,'error');
 }
+
 
 
 
