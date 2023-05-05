@@ -419,7 +419,7 @@ module.exports = {
         }
         console.log(req.body,'body here')
         let _data = {
-            secret: PROCESS.env.recap,
+            secret: process.env.recap,
             response: { 'missing-input-secret': data.captchaToken }
         }
         axios.post('https://www.google.com/recaptcha/api/siteverify',
