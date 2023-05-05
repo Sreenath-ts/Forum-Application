@@ -106,7 +106,7 @@ const server = app.listen(3000,()=>{
 
 const io = socketIO(server, {
   cors: {
-    origin: ["https://admin.socket.io","https://codemonk-ywey.onrender.com","https://glittering-dodol-08c860.netlify.app/"],
+    origin: ["https://admin.socket.io","https://codemonk-ywey.onrender.com","https://glittering-dodol-08c860.netlify.app"],
     credentials: true
   }
 });
