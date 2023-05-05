@@ -422,6 +422,7 @@ module.exports = {
             secret: process.env.recap,
             response: { 'missing-input-secret': data.captchaToken }
         }
+        console.log(process.env.recap,'secret ')
         axios.post('https://www.google.com/recaptcha/api/siteverify',
             {
                 body: `secret=${process.env.recap}&response=${data.captchaToken}`
