@@ -13,7 +13,7 @@ module.exports= {
                 console.log(err);
                 return false;
             }
-            if(chatroom.messages.length>0){
+            if(chatroom && chatroom.messages.length>0){
              messages = chatroom.messages.map(message => ({
               user: message.user._id,
               userName: message.user.name,
