@@ -34,7 +34,7 @@ const corsOptions = {
   };
 
   app.use(cors({
-    origin: 'https://glittering-dodol-08c860.netlify.app/'
+    origin: 'https://glittering-dodol-08c860.netlify.app'
   }));
   
 const cookieParser = require('cookie-parser')
