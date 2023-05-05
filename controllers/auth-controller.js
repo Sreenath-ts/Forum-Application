@@ -423,11 +423,8 @@ module.exports = {
             response: { 'missing-input-secret': data.captchaToken }
         }
         console.log(process.env.recap,'secret ')
-        axios.post('https://www.google.com/recaptcha/api/siteverify',
+        axios.post(`https://www.google.com/recaptcha/api/siteverify?secret=${process.env.recap}&response=${data.captchaToken}`,
             {
-                body: `secret=${process.env.recap}&response=${data.captchaToken}`
-              
-            },{
                 headers: { "Content-Type": "application/x-www-form-urlencoded" }
             }
         )
