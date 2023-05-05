@@ -417,8 +417,9 @@ module.exports = {
         } else {
             data = req.body;
         }
+        console.log(req.body,'body here')
         let _data = {
-            secret: '6LeY3uskAAAAAPSya30jbULZKchVYooMHzMkXh1F',
+            secret: PROCESS.env.recap,
             response: { 'missing-input-secret': data.captchaToken }
         }
         axios.post('https://www.google.com/recaptcha/api/siteverify',
@@ -551,6 +552,7 @@ checkUser:async(req,res,next)=>{
     }
 }
 }
+
 
 
 
