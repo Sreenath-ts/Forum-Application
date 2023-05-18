@@ -23,7 +23,7 @@ module.exports= {
             console.log(messages);
            
           }
-            res.status(200).json({data: chatroom.messages.length>0 ? messages : []  });
+            res.status(200).json({data: chatroom?.messages.length>0 ? messages : []  });
         });
     },
     chatRooms:async(req,res,next) =>{
